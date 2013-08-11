@@ -7,7 +7,24 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "AFNetworking.h"
 
-@interface RTViewController : UIViewController
+
+@interface RTViewController : UIViewController<UITextFieldDelegate> {
+    
+    AFHTTPClient *client;
+    
+    IBOutlet UITextField *work;
+    IBOutlet UITextField *password;
+    
+    IBOutlet UIButton *loginButton;
+    IBOutlet UIButton *weatherButton;
+    
+}
+
+-(IBAction) createUser:(id)sender;
+
+-(IBAction)getWeather:(id)sender;
+
 
 @end
