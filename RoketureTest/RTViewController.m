@@ -14,6 +14,7 @@
 
 @interface RTViewController () {
     NSMutableString *response;
+    NSMutableDictionary *weather;
 }
 
 @end
@@ -46,7 +47,6 @@
     <REQWX><USR>%@</USR><PASSWD>%@</PASSWD><ICAO>%@</ICAO></REQWX>";
     RTUser *user = [RTUser user];
     NSString *reqvBody = [NSString stringWithFormat:format,user.mail,user.passw,work.text];
-    NSLog(@"%@",[reqvBody xmlSimpleEscape]);
     reqvBody = [NSString stringWithFormat:envelope,[reqvBody xmlSimpleEscape]];
     NSMutableURLRequest *reqv = [client requestWithMethod:@"POST" path:@"" parameters:nil];
     [reqv setHTTPBody:[reqvBody dataUsingEncoding:NSUTF8StringEncoding]];
@@ -87,7 +87,9 @@
 #pragma mark - XMLParsing
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary *)attributeDict {
-    NSLog(@"%@ \nattr: %@",elementName,attributeDict);
+    if (weather != nil) {
+        response = nil;
+    }
 }
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {
@@ -99,9 +101,22 @@
 
 -(void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
     if ([elementName isEqualToString:@"SOAP-ENV:Body"]) {
-        NSLog(@"%@", response);
+        NSLog(@"%@",response);
+        NSXMLParser *parser = [[NSXMLParser alloc] initWithData:[response dataUsingEncoding:NSUTF8StringEncoding]];
+        weather = [[NSMutableDictionary alloc] initWithCapacity:2];
+        response = nil;
+        parser.delegate = self;
+        [parser parse];
     } else if ([elementName isEqualToString:@"REQWX"]) {
-        
+        NSLog(@"weather :%@",weather);
+    } else if ([elementName isEqualToString:@"METAR"]) {
+        if (response.length > 0) {
+            [weather setObject:response forKey:@"METAR"];
+        }
+    } else if ([elementName isEqualToString:@"TAF"]) {
+        if (response.length > 0) {
+            [weather setObject:response forKey:@"TAF"];
+        }
     }
 }
 
