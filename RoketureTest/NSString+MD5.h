@@ -12,4 +12,8 @@
 
 -(NSString *)toMD5;
 
+-(NSString *)xmlSimpleEscape;
+
+-(NSString *)xmlSimpleUnescape;
+
 @end

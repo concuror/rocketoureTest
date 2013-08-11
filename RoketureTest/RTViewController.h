@@ -10,7 +10,7 @@
 #import "AFNetworking.h"
 
 
-@interface RTViewController : UIViewController<UITextFieldDelegate> {
+@interface RTViewController : UIViewController<UITextFieldDelegate, NSXMLParserDelegate> {
     
     AFHTTPClient *client;
     
